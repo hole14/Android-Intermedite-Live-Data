@@ -5,11 +5,26 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.example.mylivedata.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var liveDataLiveTimerViewModel: MainViewModel
+    private lateinit var activityMainBinding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(activityMainBinding.root)
+        liveDataLiveTimerViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        subscribe()
+    }
 
+    private fun subscribe() {
+        val elapsedTimeObserver = Observer<Long?>{ along ->
+            val newText = this@MainActivity.resources.getString(R.string.seconds, along)
+            activityMainBinding.timerTextview.text = newText
+        }
+        liveDataLiveTimerViewModel.getElapsedTime().observe(this, elapsedTimeObserver)
     }
 }
